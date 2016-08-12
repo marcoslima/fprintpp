@@ -10,15 +10,16 @@
 #include <vector>
 #include <string>
 
+
 // Device (baseado em struct fp_driver:
-class CFpDevice
+class CFpDriver
 {
 private:
     using fp_driver_t = struct fp_driver*;
     fp_driver_t _fp_driver;
 
 public:
-    CFpDevice(fp_driver_t drv)
+    CFpDriver(fp_driver_t drv)
     {
         _fp_driver = drv;
     }
@@ -48,7 +49,17 @@ public:
     }
 };
 
-using vec_fpdevice_t = std::vector<CFpDevice>;
+using vec_fpdevice_t = std::vector<CFpDriver>;
+
+/** \class CFpDevice
+ * \brief Classe que encapsula struct fp_dev
+ */
+class CFpDevice
+{
+public:
+    CFpDevice(struct fp_dev* pDev);
+    ~CFpDevice();
+};
 
 
 #if 0

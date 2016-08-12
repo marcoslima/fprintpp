@@ -41,6 +41,8 @@ bool MainWindow::findDevices()
 
 void MainWindow::on_cbDevices_currentIndexChanged(int index)
 {
+    (void)index;
+
     uint16_t curId = ui->cbDevices->currentData().toUInt();
     for(auto d : _vec_devices)
     {

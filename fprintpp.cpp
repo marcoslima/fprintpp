@@ -10,7 +10,7 @@ size_t CFPrint::discoverDevices(vec_fpdevice_t& target)
     // Obtemos cada um dos descobertos:
     while(*pCurrent != nullptr)
     {
-        target.push_back(CFpDevice(fp_dscv_dev_get_driver(*pCurrent)));
+        target.push_back(CFpDriver(fp_dscv_dev_get_driver(*pCurrent)));
         pCurrent++;
     }
 
