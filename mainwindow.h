@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QMessageBox>
-#include <fprint.h>
+#include "fprintpp.h"
 #include <vector>
 #include <string>
 
@@ -22,12 +22,13 @@ public:
 private slots:
     void on_btnScan_clicked();
 
+    void on_cbDevices_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
 
-    using vec_devices_t = std::vector<std::string>;
+    vec_fpdevice_t _vec_devices;
 
-    vec_devices_t _vec_devices;
 
 private:
     bool findDevices(void);

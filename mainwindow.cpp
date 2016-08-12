@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <fprint.h>
+#include "fprintpp.h"
 #include <iostream>
 using namespace std;
 
@@ -10,8 +10,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    fp_init();
-
     // Find devices:
     findDevices();
 
@@ -20,8 +18,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
-
-    fp_exit();
 }
 
 void MainWindow::on_btnScan_clicked()
@@ -31,26 +27,29 @@ void MainWindow::on_btnScan_clicked()
 
 bool MainWindow::findDevices()
 {
-    struct fp_dscv_dev** pdevs = fp_discover_devs();
-    cout << "pdevs: " << pdevs << endl;
-    struct fp_dscv_dev** pCurrent = pdevs;
-    while(*pCurrent != nullptr)
-    {
-        struct fp_driver* pDriver = fp_dscv_dev_get_driver(*pCurrent);
-        pCurrent++;
-
-        _vec_devices.push_back(string(fp_driver_get_full_name(pDriver)));
-    }
-    // Liberamos:
-    fp_dscv_devs_free(pdevs);
+    CFPrint::instance().discoverDevices(_vec_devices);
 
     ui->cbDevices->clear();
     for(auto i : _vec_devices)
     {
-        cout << i << endl;
-        ui->cbDevices->addItem(i.c_str());
+        ui->cbDevices->addItem(i.getFullName().c_str(), QVariant(i.getId()));
     }
 
     return true;
 
+}
+
+void MainWindow::on_cbDevices_currentIndexChanged(int index)
+{
+    uint16_t curId = ui->cbDevices->currentData().toUInt();
+    for(auto d : _vec_devices)
+    {
+        if(d.getId() == curId)
+        {
+            ui->lblFullName->setText(d.getFullName().c_str());
+            ui->lblName->setText(d.getName().c_str());
+            ui->lblId->setText(QString("%1").arg(d.getId()));
+            break;
+        }
+    }
 }
