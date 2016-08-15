@@ -48,41 +48,117 @@ public:
             return fp_driver_get_driver_id(_fp_driver);
     }
 };
-
 using vec_fpdevice_t = std::vector<CFpDriver>;
+
+/** \class CFpDscDev
+ * \brief Discovered device
+ */
+class CFpDscDev
+{
+private:
+    std::shared_ptr<fp_dscv_dev> _dsc_dev;
+
+public:
+    /// Gets the driver for a discovered device.
+    struct fp_driver * 	get_driver()
+    { return fp_dscv_dev_get_driver(_dsc_dev.get());}
+
+    /// Gets the devtype for a discovered device.
+    uint32_t 	fp_dscv_dev_get_devtype (struct fp_dscv_dev *dev);
+
+    /// Determines if a specific stored print appears to be compatible with a discovered device.
+    int 	fp_dscv_dev_supports_print_data (struct fp_dscv_dev *dev, struct fp_print_data *data);
+
+    /// Determines if a specific discovered print appears to be compatible with a discovered device.
+    int 	fp_dscv_dev_supports_dscv_print (struct fp_dscv_dev *dev, struct fp_dscv_print *data);
+
+    /// Searches a list of discovered devices for a device that appears to be compatible with a stored print.
+    struct fp_dscv_dev * 	fp_dscv_dev_for_print_data (struct fp_dscv_dev **devs, struct fp_print_data *data);
+
+    /// Searches a list of discovered devices for a device that appears to be compatible with a discovered print.
+    struct fp_dscv_dev * 	fp_dscv_dev_for_dscv_print (struct fp_dscv_dev **devs, struct fp_dscv_print *print);
+
+
+};
+
 
 /** \class CFpDevice
  * \brief Classe que encapsula struct fp_dev
  */
 class CFpDevice
 {
+private:
+    std::shared_ptr<fp_dev> _pDev;
+
 public:
     CFpDevice(struct fp_dev* pDev);
-    ~CFpDevice();
+
+    /// Gets the number of enroll stages required to enroll a fingerprint with the device.
+    int 	get_nr_enroll_stages()
+    { return fp_dev_get_nr_enroll_stages(_pDev.get());}
+
+    /// Gets the devtype for a device.
+    uint32_t 	get_devtype()
+    { return fp_dev_get_devtype(_pDev.get());}
+
+    /// Determines if a stored print is compatible with a certain device.
+    int 	supports_print_data (struct fp_print_data *data)
+    { return fp_dev_supports_print_data(_pDev.get(), data);}
+
+    /// Determines if a discovered print appears to be compatible with a certain device.
+    int 	supports_dscv_print(struct fp_dscv_print *data)
+    { return fp_dev_supports_dscv_print(_pDev.get(), data);}
+
+    /// Determines if a device has imaging capabilities.
+    int 	supports_imaging()
+    { return fp_dev_supports_imaging(_pDev.get());}
+
+    /// Determines if a device is capable of identification through fp_identify_finger() and similar.
+    int 	supports_identification()
+    { return fp_dev_supports_identification(_pDev.get());}
+
+    /// Captures an image from a device.
+    int 	img_capture(int unconditional, struct fp_img **image)
+    { return fp_dev_img_capture (_pDev.get(), unconditional, image);}
+
+    /// Gets the expected width of images that will be captured from the device.
+    int 	get_img_width()
+    { return fp_dev_get_img_width(_pDev.get());}
+
+    /// Gets the expected height of images that will be captured from the device.
+    int 	get_img_height()
+    { return fp_dev_get_img_height(_pDev.get());}
+
+    /// Performs an enroll stage.
+    int 	enroll_finger_img(struct fp_print_data **print_data, struct fp_img **img)
+    { return fp_enroll_finger_img(_pDev.get(), print_data, img);}
+
+    /// Performs a new scan and verify it against a previously enrolled print.
+    int 	verify_finger_img(struct fp_print_data *enrolled_print, struct fp_img **img)
+    { return fp_verify_finger_img(_pDev.get(), enrolled_print, img);}
+
+    /// Performs a new scan and attempts to identify the scanned finger against a collection of previously enrolled fingerprints.
+    int 	identify_finger_img(struct fp_print_data **print_gallery, size_t *match_offset, struct fp_img **img)
+    { return fp_identify_finger_img(_pDev.get(), print_gallery, match_offset, img);}
+
+    /// Performs an enroll stage.
+    int 	enroll_finger(struct fp_print_data **print_data)
+    { return fp_enroll_finger(_pDev.get(), print_data);}
+
+    /// Performs a new scan and verify it against a previously enrolled print.
+    int 	verify_finger(struct fp_print_data *enrolled_print)
+    { return fp_verify_finger(_pDev.get(), enrolled_print);}
+
+
+    /// Performs a new scan and attempts to identify the scanned finger against a collection of previously enrolled fingerprints.
+    int 	identify_finger(struct fp_print_data **print_gallery, size_t *match_offset)
+    { return fp_identify_finger(_pDev.get(), print_gallery, match_offset);}
 };
 
-
-#if 0
-struct fp_dscv_dev** pdevs = fp_discover_devs();
-cout << "pdevs: " << pdevs << endl;
-struct fp_dscv_dev** pCurrent = pdevs;
-while(*pCurrent != nullptr)
-{
-    struct fp_driver* pDriver = fp_dscv_dev_get_driver(*pCurrent);
-    pCurrent++;
-
-    _vec_devices.push_back(string(fp_driver_get_full_name(pDriver)));
-}
-// Liberamos:
-fp_dscv_devs_free(pdevs);
-#endif
-
+using CFpDevices = std::vector<CFpDevice>;
 
 class CFPrint
 {
-public:
-    size_t discoverDevices(vec_fpdevice_t& target);
-
 public:
     static CFPrint& instance(void)
     {
@@ -107,6 +183,7 @@ protected:
     }
 
 public:
+    CFpDevices discoverDevices(void);
 
 };
 

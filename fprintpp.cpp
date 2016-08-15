@@ -2,15 +2,16 @@
 
 using namespace std;
 
-size_t CFPrint::discoverDevices(vec_fpdevice_t& target)
+CFpDevices CFPrint::discoverDevices()
 {
     struct fp_dscv_dev** pCurrent, **pDevs;
     pDevs = pCurrent = fp_discover_devs();
 
     // Obtemos cada um dos descobertos:
+    CFpDevices devs;
     while(*pCurrent != nullptr)
     {
-        target.push_back(CFpDriver(fp_dscv_dev_get_driver(*pCurrent)));
+        devs.push_back(CFpDevice(pCurrent));
         pCurrent++;
     }
 
@@ -18,4 +19,9 @@ size_t CFPrint::discoverDevices(vec_fpdevice_t& target)
     fp_dscv_devs_free(pDevs);
 
     return target.size();
+}
+
+CFpDevice::CFpDevice(fp_dev *pDev)
+    : _pDev(pDev, )
+{
 }
