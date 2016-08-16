@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="CCountedBody\< RT, NV,\l P1T, P2T, P3T, CF, DF \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_counted_body.html",tooltip="Implementação do RAII. "];
+}
