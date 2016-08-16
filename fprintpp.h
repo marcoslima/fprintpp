@@ -11,7 +11,8 @@
 #include <string>
 
 
-// Device (baseado em struct fp_driver:
+/** \class CFpDriver
+ *  Driver (baseado em struct fp_driver */
 class CFpDriver
 {
 private:
@@ -50,6 +51,26 @@ public:
 };
 using vec_fpdevice_t = std::vector<CFpDriver>;
 
+/** \class CFpPrintData
+ * Classe em torno de struct fp_print_data, usada para conter os dados de uma impressão digital. */
+class CFpPrintData
+{
+private:
+    using print_data_t = struct fp_print_data*;
+    print_data_t _print_data;
+
+public:
+    int fp_print_data_load(struct fp_dev *dev, enum fp_finger finger, struct fp_print_data **data);
+    int fp_print_data_from_dscv_print(struct fp_dscv_print *print, struct fp_print_data **data);
+    int fp_print_data_save(struct fp_print_data *data, enum fp_finger finger);
+    int fp_print_data_delete(struct fp_dev *dev, enum fp_finger finger);
+    void fp_print_data_free(struct fp_print_data *data);
+    size_t fp_print_data_get_data(struct fp_print_data *data, unsigned char **ret);
+    struct fp_print_data *fp_print_data_from_data(unsigned char *buf, size_t buflen);
+    uint16_t fp_print_data_get_driver_id(struct fp_print_data *data);
+    uint32_t fp_print_data_get_devtype(struct fp_print_data *data);
+};
+
 /** \class CFpDscDev
  * \brief Discovered device
  */
@@ -64,19 +85,22 @@ public:
     { return fp_dscv_dev_get_driver(_dsc_dev.get());}
 
     /// Gets the devtype for a discovered device.
-    uint32_t 	fp_dscv_dev_get_devtype (struct fp_dscv_dev *dev);
+    uint32_t 	get_devtype ()
+    { return fp_dscv_dev_get_devtype(_dsc_dev.get());}
 
     /// Determines if a specific stored print appears to be compatible with a discovered device.
-    int 	fp_dscv_dev_supports_print_data (struct fp_dscv_dev *dev, struct fp_print_data *data);
+    int 	supports_print_data (struct fp_print_data *data)
+    { return fp_dscv_dev_supports_print_data(_dsc_dev.get(), data);}
 
     /// Determines if a specific discovered print appears to be compatible with a discovered device.
-    int 	fp_dscv_dev_supports_dscv_print (struct fp_dscv_dev *dev, struct fp_dscv_print *data);
+    int 	supports_dscv_print (struct fp_dscv_print *data)
+    { return fp_dscv_dev_supports_dscv_print(_dsc_dev.get(), data);}
 
-    /// Searches a list of discovered devices for a device that appears to be compatible with a stored print.
-    struct fp_dscv_dev * 	fp_dscv_dev_for_print_data (struct fp_dscv_dev **devs, struct fp_print_data *data);
-
-    /// Searches a list of discovered devices for a device that appears to be compatible with a discovered print.
-    struct fp_dscv_dev * 	fp_dscv_dev_for_dscv_print (struct fp_dscv_dev **devs, struct fp_dscv_print *print);
+    /// Abre o dispositivo
+    CFpDevice& open(void)
+    {
+        // TODO: usar fp_dev_open para abrir, inicializar um CFpDevice e retorná-lo.
+    }
 
 
 };
@@ -184,6 +208,14 @@ protected:
 
 public:
     CFpDevices discoverDevices(void);
+    CFpDevices devicesForPrint(struct fp_print_data *data);
+    CFpDevices devicesForDscPrint(struct fp_dscv_print *print);
+    /// Searches a list of discovered devices for a device that appears to be compatible with a stored print.
+    struct fp_dscv_dev * 	fp_dscv_dev_for_print_data (struct fp_dscv_dev **devs, struct fp_print_data *data);
+
+    /// Searches a list of discovered devices for a device that appears to be compatible with a discovered print.
+    struct fp_dscv_dev * 	fp_dscv_dev_for_dscv_print (struct fp_dscv_dev **devs, struct fp_dscv_print *print);
+
 
 };
 
