@@ -7,6 +7,8 @@
 #include <vector>
 #include <string>
 
+using namespace fprintpp;
+
 namespace Ui {
 class MainWindow;
 }
@@ -27,7 +29,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    vec_fpdevice_t _vec_devices;
+    // Devices descobertos
+    CFpDscDevsPtr _devs;
 
 
 private:

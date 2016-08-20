@@ -1,5 +1,6 @@
 #ifndef CCOUNTEDBODY_H
 #define CCOUNTEDBODY_H
+#include <iostream>
 
 /** \brief Implementação do RAII.
 
@@ -9,7 +10,7 @@
 
     @param RT Resource Type
     @param NV Null Value
-    @param P?T Parâmetro da função de criação (? = 1 - 3)
+    @param P?T Tipo dos parâmetros da função de criação (? = 1 - 3)
     @param CF Create Function
     @param DF Deleter Function
 
@@ -42,26 +43,15 @@ Criamos uma função para abertura do dispositivo compatível com a CCountedBody
 
 ~~~~
 
-Criamos uma função para fechar o dispositivo
-
-~~~~{.cpp}
-
-        void fnCloseDevice(DPFPDD_DEV hDev)
-        {
-            CloseDevice(hDev);
-        }
-
-~~~~
-
 Criamos então a classe que será, automaticamente, RAII:
 
 ~~~~{.cpp}
 
-        class CDevice : public CCountedBody<DPFPDD_DEV, NULL, char*, DPFPDD_PRIORITY, void*, fnOpenDevice, fnCloseDevice>
+        class CDevice : public CCountedBody<DPFPDD_DEV, NULL, char*, DPFPDD_PRIORITY, void*, fnOpenDevice, CloseDevice>
         {
         private:
             /// Quando a classe tiver variáveis, deve-se implementar a função swap (veja abaixo).
-            std::string _sContext;
+            std::string _sContext; //!< Exemplo de variável da classe derivada.
 
         public:
             //! Constructor: abre o dispositivo informado em szDeviceName
@@ -77,7 +67,11 @@ Criamos então a classe que será, automaticamente, RAII:
             }
         };
 ~~~~
+
+
 */
+
+
 template<typename RT, RT NV, typename P1T, typename P2T, typename P3T, RT (*CF)(P1T, P2T, P3T), void(*DF)(RT)>
 class CCountedBody
 {
@@ -87,8 +81,8 @@ private:
     {
         friend class CCountedBody<RT, NV, P1T, P2T, P3T, CF, DF>;
     private:
-        int _count;
         RT _device;
+        int _count;
 
     public:
         BodyRep(RT hDevice)
@@ -107,7 +101,7 @@ private:
 public:
     //! Ctor com parâmetros para criação do recurso
     CCountedBody(P1T p1, P2T p2, P3T p3)
-        : _pDev(NULL)
+        : _pDev(nullptr)
     {
         Open(p1,p2,p3);
     }
@@ -128,7 +122,7 @@ public:
 
     //! Default constructor
     CCountedBody()
-        : _pDev(NULL)
+        : _pDev(nullptr)
     {
     }
 
@@ -162,7 +156,7 @@ public:
         }
 
         // Estando ou não com alguém, não está mais conosco:
-        _pDev = NULL;
+        _pDev = nullptr;
     }
 
     CCountedBody &operator=(const CCountedBody& s)
@@ -192,7 +186,7 @@ public:
     /// ninguém.
     bool ok(void)
     {
-        return _pDev != NULL;
+        return _pDev != nullptr;
     }
 
 ///////////////////////////////////

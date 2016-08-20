@@ -14,8 +14,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    fprintpp.cpp \
-    countedbody.cpp
+    fprintpp.cpp
 
 HEADERS  += mainwindow.h \
     fprintpp.h \

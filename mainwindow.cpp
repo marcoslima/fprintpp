@@ -27,12 +27,14 @@ void MainWindow::on_btnScan_clicked()
 
 bool MainWindow::findDevices()
 {
-    CFPrint::instance().discoverDevices(_vec_devices);
+    _devs = CFPrint::instance().discoverDevices();
 
     ui->cbDevices->clear();
-    for(auto i : _vec_devices)
+    size_t nSize = _devs->size();
+    for(size_t i = 0; i < nSize; i++)
     {
-        ui->cbDevices->addItem(i.getFullName().c_str(), QVariant(i.getId()));
+        CFpDriver drv = _devs->get_driver(i);
+        ui->cbDevices->addItem(drv.getFullName().c_str(), QVariant(drv.getId()));
     }
 
     return true;
@@ -44,13 +46,15 @@ void MainWindow::on_cbDevices_currentIndexChanged(int index)
     (void)index;
 
     uint16_t curId = ui->cbDevices->currentData().toUInt();
-    for(auto d : _vec_devices)
+    size_t nSize = _devs->size();
+    for(size_t i = 0; i < nSize; i++)
     {
-        if(d.getId() == curId)
+        if(_devs->get_driver(i).getId() == curId)
         {
-            ui->lblFullName->setText(d.getFullName().c_str());
-            ui->lblName->setText(d.getName().c_str());
-            ui->lblId->setText(QString("%1").arg(d.getId()));
+            CFpDriver drv = _devs->get_driver(i);
+            ui->lblFullName->setText(drv.getFullName().c_str());
+            ui->lblName->setText(drv.getName().c_str());
+            ui->lblId->setText(QString("%1").arg(drv.getId()));
             break;
         }
     }
