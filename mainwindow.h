@@ -26,6 +26,8 @@ private slots:
 
     void on_cbDevices_currentIndexChanged(int index);
 
+    void on_refresh_device(void);
+
 private:
     Ui::MainWindow *ui;
 
