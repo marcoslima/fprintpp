@@ -376,15 +376,6 @@ public:
      *
      */
 
-    CFpImage fpImg = dev.img_capture(0,res);
-
-    if(0 != res)
-    {
-        QMessageBox::information(this, "Mensagem", "Erro obtendo imagem");
-        return;
-    }
-
-     */
     CFpDscDevsPtr discoverDevices(void);
 
     /** \brief Descobre os dispositivos instalados compativeis com o fmt especificado. */
