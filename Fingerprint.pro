@@ -13,10 +13,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    fprintpp.cpp
 
 HEADERS  += mainwindow.h \
-    fprintpp.h
+    fprintpp.h \
+    countedbody.h
 
 FORMS    += mainwindow.ui
 
