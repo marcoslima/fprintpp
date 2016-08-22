@@ -30,7 +30,7 @@ void MainWindow::on_btnScan_clicked()
     CFpDevice dev = _devs->get_device(nDev);
     int res;
 
-    CFpImage fpImg = dev.img_capture(0,res);
+    CFpImage imgCap = dev.img_capture(0,res);
 
     if(0 != res)
     {
@@ -38,8 +38,15 @@ void MainWindow::on_btnScan_clicked()
         return;
     }
 
-    ui->lbFrame->setPixmap(QPixmap::fromImage(fpImg));
-   
+    // Padronizamos a imagem:
+    CFpImage imgStd(imgCap);
+    imgCap.standardize();
+    CFpImage imgBin = imgCap.binarize();
+
+    ui->lbCap->setPixmap(QPixmap::fromImage(imgCap));
+    ui->lbStd->setPixmap(QPixmap::fromImage(imgStd));
+    ui->lbBin->setPixmap(QPixmap::fromImage(imgBin));
+
 }
 
 bool MainWindow::findDevices()
