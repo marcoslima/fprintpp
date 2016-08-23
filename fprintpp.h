@@ -187,6 +187,15 @@ image_t fn_dummy_open(void*, void*, void*);
 
 class CFpImage : public CCountedBody<image_t, nullptr, void*, void*, void*, fn_dummy_open, fp_img_free>
 {
+    /** ***************************************************
+     * \class CFpMinutiae
+     * \brief Wrapper para struct fp_minutia
+     ******************************************************/
+    class CFpMinutia : public struct fp_minutia
+    {
+
+    };
+
 public:
     /** \brief ctor: inicialização com handle existente */
     CFpImage(image_t hImg) : CCountedBody(hImg){}
