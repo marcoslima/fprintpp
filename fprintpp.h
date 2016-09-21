@@ -191,7 +191,7 @@ class CFpImage : public CCountedBody<image_t, nullptr, void*, void*, void*, fn_d
      * \class CFpMinutiae
      * \brief Wrapper para struct fp_minutia
      ******************************************************/
-    class CFpMinutia : public struct fp_minutia
+    class CFpMinutia : public fp_minutia
     {
 
     };

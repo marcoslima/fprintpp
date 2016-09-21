@@ -24,3 +24,5 @@ FORMS    += mainwindow.ui
 
 CONFIG += link_pkgconfig
 PKGCONFIG += libfprint
+
+
